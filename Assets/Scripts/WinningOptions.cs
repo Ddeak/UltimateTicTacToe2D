@@ -2,39 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TTTBoard : MonoBehaviour
-{
-    bool playerHasWon = false;
-    Block [] blocks;
-    WinningOptions winOpts;
-
-    private void Start() {
-        winOpts = new WinningOptions();
-        blocks = GetComponentsInChildren<Block>();
-    }
-
-    public void CheckForWin(int blockIndex) {
-        int [][] currentWinningOptions = winOpts.GetByPosition(blockIndex);
-        bool winFound = false;
-        
-        for (int i = 0; i < currentWinningOptions.Length; i++)
-        {
-            int winTicked = 0;
-            for (int j = 0; j < currentWinningOptions[i].Length; j++)
-            {
-                if (blocks[currentWinningOptions[i][j]].IsClicked) {
-                    winTicked++;
-                }
-            }
-            if (winTicked == 2) {
-                winFound = true;
-            }
-        }
-
-        Debug.Log("Win:" + winFound);
-    }
-}
-
 public class WinningOptions {
     int [][] TopLeft = new int[3][]
     {
