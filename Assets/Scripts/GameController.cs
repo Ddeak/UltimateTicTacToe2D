@@ -21,6 +21,7 @@ public class GameController : MonoBehaviour {
     public GameObject gameOverPanel;
     public Text gameOverText;
     public GameObject resetButton;
+    public GameObject startInfo;
     public Player playerX;
     public Player playerO;
     public PlayerColor activePlayerColor;
@@ -122,6 +123,7 @@ public class GameController : MonoBehaviour {
         resetButton.SetActive(false);
         SetPlayerButtons(true);
         SetPlayerColorsInactive();
+        startInfo.SetActive(true);
     }
 
     void SetPlayerColors(Player newPlayer, Player oldPlayer) {
@@ -147,6 +149,7 @@ public class GameController : MonoBehaviour {
     void StartGame() {
         SetBoardInteractable(true);
         SetPlayerButtons(false);
+        startInfo.SetActive(false);
     }
 
     void SetPlayerButtons(bool toggle) {
