@@ -17,21 +17,23 @@ public class PlayerColor {
 }
 
 public class GameController : MonoBehaviour {
-    public Text[] buttonList;
     public GameObject gameOverPanel;
-    public Text gameOverText;
     public GameObject resetButton;
     public GameObject startInfo;
+
+    public Text[] buttonList;
+    public Text gameOverText;
+
     public Player playerX;
     public Player playerO;
     public PlayerColor activePlayerColor;
     public PlayerColor inactivePlayerColor;
 
-    private string playerSide;
     private WinningOptions winOpts;
+    private string playerSide;
     private int moveCount;
 
-    private void Awake() {
+    void Awake() {
         winOpts = new WinningOptions();
         SetGameControllerReferencesOnButtons();
         gameOverPanel.SetActive(false);
@@ -40,7 +42,7 @@ public class GameController : MonoBehaviour {
         resetButton.SetActive(false);
     }
 
-    private void SetGameControllerReferencesOnButtons() {
+    void SetGameControllerReferencesOnButtons() {
         foreach (Text button in buttonList)
         {
             button.GetComponentInParent<GridSpace>().SetGameControllerRef(this);
@@ -69,7 +71,40 @@ public class GameController : MonoBehaviour {
             playerSide = "X";
             SetPlayerColors(playerX, playerO);
         }
-        
+    }
+
+    void SetBoardInteractable(bool active) {
+        foreach (Text button in buttonList)
+        {
+            button.GetComponentInParent<Button>().interactable = active;
+            if (active) button.text = "";
+        }
+    }
+
+    void SetPlayerColors(Player newPlayer, Player oldPlayer) {
+        newPlayer.panel.color = activePlayerColor.panelColor;
+        newPlayer.text.color = activePlayerColor.textColor;
+
+        oldPlayer.panel.color = inactivePlayerColor.panelColor;
+        oldPlayer.text.color = inactivePlayerColor.textColor;
+    }
+
+    void StartGame() {
+        SetBoardInteractable(true);
+        SetPlayerButtons(false);
+        startInfo.SetActive(false);
+    }
+
+    void SetPlayerButtons(bool toggle) {
+        playerX.button.interactable = toggle;
+        playerO.button.interactable = toggle;
+    }
+
+    void SetPlayerColorsInactive() {
+        playerX.panel.color = inactivePlayerColor.panelColor;
+        playerX.text.color = inactivePlayerColor.textColor;
+        playerO.panel.color = inactivePlayerColor.panelColor;
+        playerO.text.color = inactivePlayerColor.textColor;
     }
 
     public string GetPlayerSide() {
@@ -104,16 +139,7 @@ public class GameController : MonoBehaviour {
                 winFound = true;
             }
         }
-
         return winFound;
-    }
-
-    void SetBoardInteractable(bool active) {
-        foreach (Text button in buttonList)
-        {
-            button.GetComponentInParent<Button>().interactable = active;
-            if (active) button.text = "";
-        }
     }
 
     public void RestartGame() {
@@ -126,14 +152,6 @@ public class GameController : MonoBehaviour {
         startInfo.SetActive(true);
     }
 
-    void SetPlayerColors(Player newPlayer, Player oldPlayer) {
-        newPlayer.panel.color = activePlayerColor.panelColor;
-        newPlayer.text.color = activePlayerColor.textColor;
-
-        oldPlayer.panel.color = inactivePlayerColor.panelColor;
-        oldPlayer.text.color = inactivePlayerColor.textColor;
-    }
-
     public void SetStartingSide(string startingSide) {
         playerSide = startingSide;
         
@@ -144,23 +162,5 @@ public class GameController : MonoBehaviour {
         }
 
         StartGame();
-    }
-
-    void StartGame() {
-        SetBoardInteractable(true);
-        SetPlayerButtons(false);
-        startInfo.SetActive(false);
-    }
-
-    void SetPlayerButtons(bool toggle) {
-        playerX.button.interactable = toggle;
-        playerO.button.interactable = toggle;
-    }
-
-    void SetPlayerColorsInactive() {
-        playerX.panel.color = inactivePlayerColor.panelColor;
-        playerX.text.color = inactivePlayerColor.textColor;
-        playerO.panel.color = inactivePlayerColor.panelColor;
-        playerO.text.color = inactivePlayerColor.textColor;
     }
 }
