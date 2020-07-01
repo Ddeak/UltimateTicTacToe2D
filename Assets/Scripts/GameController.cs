@@ -42,9 +42,9 @@ public class GameController : MonoBehaviour {
         SetBoardInteractable(false);
 
         if (gameIsADraw)
-            gameOverText.text = "It's a draw!";
+            gameOverText.text = "-";
         else
-            gameOverText.text = globalController.GetPlayerSide() + " wins!";
+            gameOverText.text = globalController.GetPlayerSide();
 
         gameOverPanel.SetActive(true);
     }
