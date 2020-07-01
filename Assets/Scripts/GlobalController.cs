@@ -19,6 +19,7 @@ public class GlobalController : MonoBehaviour
     public PlayerColor inactivePlayerColor;
 
     public GameController[] sections;
+    private int sectionsFilled;
 
     private WinningOptions winOpts;
 
@@ -44,6 +45,7 @@ public class GlobalController : MonoBehaviour
     }
 
     void StartGame() {
+        sectionsFilled = 0;
         SetPlayerButtons(false);
         foreach (GameController section in sections)
         {
@@ -118,9 +120,9 @@ public class GlobalController : MonoBehaviour
         StartGame();
     }
 
-    void GameOver() {
+    void GameOver(string winText) {
         gameOverPanel.SetActive(true);
-        gameOverText.text = "Game Over!\n" + GetPlayerSide() + " wins!";
+        gameOverText.text = winText;
 
         foreach (GameController section in sections)
         {
@@ -133,6 +135,7 @@ public class GlobalController : MonoBehaviour
     public void CheckForWin(int position) {
         int [][] currentWinningOptions = winOpts.GetByPosition(position);
         bool winFound = false;
+        sectionsFilled++;
         
         for (int i = 0; i < currentWinningOptions.Length; i++)
         {
@@ -147,7 +150,10 @@ public class GlobalController : MonoBehaviour
                 winFound = true;
             }
         }
-
-        if (winFound) GameOver();
+        
+        if (winFound) GameOver("Game Over!\n" + GetPlayerSide() + " wins!");
+        if (sectionsFilled == 9) {
+            GameOver("Game Over!\n It's a draw!");
+        }
     }
 }
