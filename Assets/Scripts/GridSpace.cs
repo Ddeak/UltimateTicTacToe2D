@@ -10,14 +10,16 @@ public class GridSpace : MonoBehaviour
     public int position;
 
     private GameController gameController;
+    private GlobalController globalController;
     
-    public void SetGameControllerRef(GameController controller) {
+    public void SetGameControllerRef(GameController controller, GlobalController global) {
         gameController = controller;
+        globalController = global;
     }
 
     public void SetSpace ()
     {
-        buttonText.text = gameController.GetPlayerSide();
+        buttonText.text = globalController.GetPlayerSide();
         button.interactable = false;
         gameController.EndTurn(position);
     }
