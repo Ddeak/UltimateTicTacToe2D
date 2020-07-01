@@ -15,20 +15,21 @@ public class GameController : MonoBehaviour {
 
     public Text[] buttonList;
     public Text gameOverText;
+    public int gamePosition;
 
     private WinningOptions winOpts;
     private int moveCount;
 
     void Awake() {
-        winOpts = new WinningOptions();
         SetGameControllerReferencesOnButtons();
         gameOverPanel.SetActive(false);
         gameOverText.text = "Game Over";
         moveCount = 0;
     }
 
-    public void SetGlobalControllerRef(GlobalController global) {
+    public void SetGlobalControllerRef(GlobalController global, WinningOptions opts) {
         globalController = global;
+        winOpts = opts;
     }
 
     void SetGameControllerReferencesOnButtons() {
@@ -38,7 +39,7 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    void GameOver(bool gameIsADraw) {
+    void SectionOver(bool gameIsADraw) {
         SetBoardInteractable(false);
 
         if (gameIsADraw)
@@ -47,9 +48,10 @@ public class GameController : MonoBehaviour {
             gameOverText.text = globalController.GetPlayerSide();
 
         gameOverPanel.SetActive(true);
+        globalController.CheckForWin(gamePosition);
     }
 
-    void SetBoardInteractable(bool active) {
+    public void SetBoardInteractable(bool active) {
         foreach (Text button in buttonList)
         {
             button.GetComponentInParent<Button>().interactable = active;
@@ -58,18 +60,21 @@ public class GameController : MonoBehaviour {
     }
 
     public void StartGame() {
+        moveCount = 0;
+        gameOverPanel.SetActive(false);
+        gameOverText.text = "";
         SetBoardInteractable(true);
     }
 
     public void EndTurn(int buttonPressed) {
-        bool gameWon = CheckForWin(buttonPressed);
-        bool gameIsADraw = ++moveCount >= 9 && !gameWon;
+        bool sectionWon = CheckForWin(buttonPressed);
+        bool sectionIsADraw = ++moveCount >= 9 && !sectionWon;
 
-        if ( gameWon || gameIsADraw) {
-            GameOver(gameIsADraw);
-        } 
-
-        globalController.EndTurn();
+        if ( sectionWon || sectionIsADraw ) {
+            SectionOver(sectionIsADraw);
+        } else {
+            globalController.EndTurn();
+        }  
     }
 
     public bool CheckForWin(int blockIndex) {
@@ -90,10 +95,5 @@ public class GameController : MonoBehaviour {
             }
         }
         return winFound;
-    }
-
-    public void RestartGame() {
-        moveCount = 0;
-        gameOverPanel.SetActive(false);
     }
 }

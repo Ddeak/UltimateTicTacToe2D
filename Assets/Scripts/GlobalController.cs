@@ -1,11 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GlobalController : MonoBehaviour
 {
     public GameObject resetButton;
     public GameObject startInfo;
+
+    public GameObject gameOverPanel;
+    public Text gameOverText;
 
     public Player playerX;
     public Player playerO;
@@ -16,23 +20,31 @@ public class GlobalController : MonoBehaviour
 
     public GameController[] sections;
 
+    private WinningOptions winOpts;
+
     public string GetPlayerSide() {
         return playerSide;
     }
 
     void Awake() {
+        winOpts = new WinningOptions();
         resetButton.SetActive(false);
         SetGlobalControllerReferencesOnSections();
+        gameOverPanel.SetActive(false);
+        gameOverText.text = "";
+        SetPlayerColorsActive();
+
     }
 
     void SetGlobalControllerReferencesOnSections() {
         foreach (GameController section in sections)
         {
-            section.SetGlobalControllerRef(this);
+            section.SetGlobalControllerRef(this, winOpts);
         }
     }
 
     void StartGame() {
+        SetPlayerButtons(false);
         foreach (GameController section in sections)
         {
             section.StartGame();
@@ -72,14 +84,22 @@ public class GlobalController : MonoBehaviour
         playerO.text.color = inactivePlayerColor.textColor;
     }
 
+    void SetPlayerColorsActive() {
+        playerX.panel.color = activePlayerColor.panelColor;
+        playerX.text.color = activePlayerColor.textColor;
+        playerO.panel.color = activePlayerColor.panelColor;
+        playerO.text.color = activePlayerColor.textColor;
+    }
+
     public void RestartGame() {
-        foreach (GameController section in sections)
-        {
-            section.RestartGame();
-        }
         resetButton.SetActive(false);
         SetPlayerButtons(true);
-        SetPlayerColorsInactive();
+        SetPlayerColorsActive();
+
+        gameOverPanel.SetActive(false);
+        gameOverText.text = "";
+
+        startInfo.SetActive(true);
     }
 
     public void EndTurn() {
@@ -96,5 +116,38 @@ public class GlobalController : MonoBehaviour
         }
 
         StartGame();
+    }
+
+    void GameOver() {
+        gameOverPanel.SetActive(true);
+        gameOverText.text = "Game Over!\n" + GetPlayerSide() + " wins!";
+
+        foreach (GameController section in sections)
+        {
+            section.SetBoardInteractable(false);
+        }
+
+        resetButton.SetActive(true);
+    }
+
+    public void CheckForWin(int position) {
+        int [][] currentWinningOptions = winOpts.GetByPosition(position);
+        bool winFound = false;
+        
+        for (int i = 0; i < currentWinningOptions.Length; i++)
+        {
+            int winTicked = 0;
+            for (int j = 0; j < currentWinningOptions[i].Length; j++)
+            {
+                if (sections[currentWinningOptions[i][j]].gameOverText.text == GetPlayerSide()) {
+                    winTicked++;
+                }
+            }
+            if (winTicked == 2) {
+                winFound = true;
+            }
+        }
+
+        if (winFound) GameOver();
     }
 }
